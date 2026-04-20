@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<!-- saved from url=(0064)file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html -->
+<!-- saved from url=(0057)file:///C:/Users/mark.richards/Downloads/index%20(7).html -->
 <html lang="en"><head><meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
 
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -222,7 +222,7 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
   <a href="file:///C:/" class="logo">Form<span>LL</span></a>
   <div class="nav-right">
     <a href="tel:+440000000000" class="nav-tel">0800 000 0000</a>
-    <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire" class="nav-cta">Get Started</a>
+    <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire" class="nav-cta">Get Started</a>
   </div>
 </nav>
 
@@ -309,10 +309,19 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
             <label>Number of legal owners on title</label>
             <select id="ownerCount" required="">
               <option value="">— Select —</option>
-              <option value="1">1 owner — £0 extra</option>
-              <option value="2">2 owners — £50 extra</option>
-              <option value="3">3 owners — £100 extra</option>
+              <option value="1">1 owner</option>
+              <option value="2">2 owners (+£50 per extra owner)</option>
+              <option value="3">3 owners (+£100 for 2 extra owners)</option>
             </select>
+          </div>
+
+          <!-- LIVE PRICE SUMMARY -->
+          <div id="priceSummary" style="display:none;background:var(--cream);border:1px solid var(--rule);padding:14px 16px;margin-bottom:13px;">
+            <div style="display:flex;justify-content:space-between;align-items:center;font-size:.82rem;">
+              <span id="summaryLabel" style="color:var(--slate);"></span>
+              <span id="summaryTotal" style="font-family:&#39;Cormorant Garamond&#39;,serif;font-size:1.6rem;font-weight:700;color:var(--ink);"></span>
+            </div>
+            <div id="summaryBreakdown" style="font-size:.72rem;color:var(--muted);margin-top:4px;"></div>
           </div>
           <div class="fg">
             <label>Completion date</label>
@@ -509,7 +518,7 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
             <div class="pb-vat">Inc VAT &nbsp;·&nbsp; Next working day &nbsp;·&nbsp; Solicitor on call</div>
           </div>
           <div class="pb-note">Your certificate. In your inbox. Mortgage back on track. Choose your speed above — nothing more to pay to us once you're done.</div>
-          <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire" class="pb-cta">Get Your Certificate Now</a>
+          <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire" class="pb-cta">Get Your Certificate Now</a>
         </div>
       </div>
     </div>
@@ -604,7 +613,7 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
   <div class="container">
     <h2>Your mortgage<br><em>completes on time.</em></h2>
     <p>Certificate in your inbox. Transaction back on track. £160 inc VAT.</p>
-    <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire" class="cta-btn">Get Your Certificate — £160</a>
+    <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire" class="cta-btn">Get Your Certificate — £160</a>
   </div>
 </div>
 
@@ -620,9 +629,9 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
       <div>
         <div class="f-col-title">Service</div>
         <div class="f-links">
-          <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire">Get Started</a>
-          <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire">How It Works</a>
-          <a href="file:///C:/Users/mark.richards/Downloads/formll-index%20(1).html#enquire">What's Included</a>
+          <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire">Get Started</a>
+          <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire">How It Works</a>
+          <a href="file:///C:/Users/mark.richards/Downloads/index%20(7).html#enquire">What's Included</a>
         </div>
       </div>
       <div>
@@ -663,21 +672,36 @@ footer{background:#0a0a0a;color:rgba(255,255,255,.45);padding:52px 0 28px;}
 function getTotal() {
   const service = document.getElementById('serviceType').value;
   const ownerVal = document.getElementById('ownerCount')?.value || '1';
-  const owners = parseInt(ownerVal);
+  const owners = parseInt(ownerVal) || 1;
   const base = service === 'fasttrack' ? 240 : 160;
   const extra = owners === 2 ? 50 : owners === 3 ? 100 : 0;
-  return base + extra;
+  return { base, extra, total: base + extra, owners, service };
 }
 
-function updateButton() {
-  const service = document.getElementById('serviceType').value;
-  const ownerVal = document.getElementById('ownerCount')?.value || '1';
-  const owners = parseInt(ownerVal);
-  const total = getTotal();
-  const speed = service === 'fasttrack' ? 'Guaranteed next working day' : '3–5 working days · Best effort';
-  const ownerNote = owners > 1 ? ` · ${owners} owners` : '';
+function updatePriceDisplay() {
+  const { base, extra, total, owners, service } = getTotal();
+  const ownerVal = document.getElementById('ownerCount')?.value;
   const btn = document.getElementById('payBtn');
-  if (btn) btn.innerHTML = `Pay £${total} &amp; Get Your Certificate <span class="pay-sub">${speed}${ownerNote}</span>`;
+  const summary = document.getElementById('priceSummary');
+  const summaryLabel = document.getElementById('summaryLabel');
+  const summaryTotal = document.getElementById('summaryTotal');
+  const summaryBreakdown = document.getElementById('summaryBreakdown');
+
+  const speed = service === 'fasttrack' ? 'Guaranteed next working day' : '3–5 working days · Best effort';
+
+  if (btn) {
+    btn.innerHTML = `Pay £${total} inc VAT &amp; Get Your Certificate <span class="pay-sub">${speed}</span>`;
+  }
+
+  if (ownerVal && ownerVal !== '') {
+    summary.style.display = 'block';
+    summaryLabel.textContent = service === 'fasttrack' ? 'Fast Track' : 'Standard';
+    summaryTotal.textContent = `£${total}`;
+    let breakdown = `£${base} base`;
+    if (extra > 0) breakdown += ` + £${extra} for ${owners - 1} additional owner${owners > 2 ? 's' : ''}`;
+    breakdown += ' · Inc VAT · All-in';
+    summaryBreakdown.textContent = breakdown;
+  }
 }
 
 // ── SERVICE TOGGLE ──
@@ -688,7 +712,7 @@ function selectService(type) {
   document.getElementById('includesStandard').style.display = isStandard ? 'flex' : 'none';
   document.getElementById('includesFastTrack').style.display = isStandard ? 'none' : 'flex';
   document.getElementById('serviceType').value = type;
-  updateButton();
+  updatePriceDisplay();
 }
 
 function toggleFaq(btn){
@@ -710,8 +734,8 @@ document.querySelectorAll('a[href="#enquire"]').forEach(a=>{
   });
 });
 
-// Owner count changes update the button price live
-document.getElementById('ownerCount')?.addEventListener('change', updateButton);
+// Owner count changes update the price display live
+document.getElementById('ownerCount')?.addEventListener('change', updatePriceDisplay);
 
 document.getElementById('mainForm').addEventListener('submit', async function(e){
   e.preventDefault();
@@ -738,9 +762,9 @@ document.getElementById('mainForm').addEventListener('submit', async function(e)
 
   setTimeout(()=>{
     btn.disabled = false;
-    updateButton();
     document.getElementById('successModal').classList.add('show');
     document.getElementById('mainForm').reset();
+    document.getElementById('priceSummary').style.display = 'none';
     selectService('standard');
   }, 1600);
 });
