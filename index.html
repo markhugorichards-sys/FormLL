@@ -59,7 +59,7 @@ h1 em{font-style:italic;color:var(--gold);}
 .tick svg{width:9px;height:9px;}
 
 /* FORM CARD */
-.form-card{background:var(--white);border:1px solid var(--rule);border-top:3px solid var(--ink);padding:36px 32px;position:sticky;top:80px;box-shadow:0 16px 48px rgba(0,0,0,.07);}
+.form-card{background:var(--white);border:1px solid var(--rule);border-top:3px solid var(--ink);padding:36px 32px;box-shadow:0 16px 48px rgba(0,0,0,.07);}
 .fc-price-row{padding-bottom:22px;border-bottom:1px solid var(--rule);margin-bottom:24px;}
 .fc-price-label{font-size:.68rem;font-weight:700;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:6px;}
 .fc-price{font-family:'Cormorant Garamond',serif;font-size:3.2rem;font-weight:700;color:var(--ink);line-height:1;margin-bottom:8px;}
@@ -800,6 +800,7 @@ document.getElementById('mainForm').addEventListener('submit', async function(e)
       document.getElementById('successModal').classList.add('show');
     }, 800);
   }
+});
 </script>
 </body>
 </html>
