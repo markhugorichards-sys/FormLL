@@ -771,23 +771,35 @@ document.getElementById('mainForm').addEventListener('submit', async function(e)
   btn.disabled = true;
   btn.innerHTML = 'Processing... <span class="pay-sub">Redirecting to secure payment</span>';
 
-  // PRODUCTION: Create Stripe Payment Links for each combination and route below
-  // Standard 1 owner £160:  'https://buy.stripe.com/LINK_S1'
-  // Standard 2 owners £210: 'https://buy.stripe.com/LINK_S2'
-  // Standard 3 owners £260: 'https://buy.stripe.com/LINK_S3'
-  // Fast Track 1 owner £240: 'https://buy.stripe.com/LINK_F1'
-  // Fast Track 2 owners £290: 'https://buy.stripe.com/LINK_F2'
-  // Fast Track 3 owners £340: 'https://buy.stripe.com/LINK_F3'
-  // All links: append ?prefilled_email='+encodeURIComponent(v('email'))
+  const stripeLinks = {
+    standard: {
+      1: 'https://buy.stripe.com/bJecN65PV2ESbjmajP0Ny00',
+      2: 'https://buy.stripe.com/9B6cN69271AO87a9fL0Ny01',
+      3: 'https://buy.stripe.com/7sYdRa9272ESdru4Zv0Ny02'
+    },
+    fasttrack: {
+      1: null,
+      2: null,
+      3: null
+    }
+  };
 
-  setTimeout(()=>{
-    btn.disabled = false;
-    document.getElementById('successModal').classList.add('show');
-    document.getElementById('mainForm').reset();
-    document.getElementById('priceSummary').style.display = 'none';
-    selectService('standard');
-  }, 1600);
-});
+  const owners = parseInt(document.getElementById('ownerCount').value) || 1;
+  const email = document.getElementById('email').value;
+  const count = owners > 3 ? 3 : owners;
+
+  const link = stripeLinks[service] && stripeLinks[service][count];
+
+  if (link) {
+    const url = link + '?prefilled_email=' + encodeURIComponent(email);
+    setTimeout(() => { window.location.href = url; }, 800);
+  } else {
+    setTimeout(()=>{
+      btn.disabled = false;
+      btn.innerHTML = 'Get Your Certificate <span class="pay-sub">Secure payment via Stripe</span>';
+      document.getElementById('successModal').classList.add('show');
+    }, 800);
+  }
 </script>
 </body>
 </html>
